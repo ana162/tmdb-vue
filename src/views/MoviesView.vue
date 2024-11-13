@@ -11,7 +11,7 @@ const movies = ref([]);
 const router = useRouter()
 
 
-const getGenreName = (id) => genres.value.find((genre) => genre.id === id).name
+const getGenreName = (id) => genreStore.genres.find((genre) => genre.id === id).name
 const listMovies = async (genreId) => {
   genreStore.setCurrentGenreId(genreId);
   isLoading.value = true;
@@ -26,6 +26,9 @@ const listMovies = async (genreId) => {
   isLoading.value = false;
 };
 
+const formatDate = (date) => new Date(date).toLocaleDateString('pt-BR');
+
+
 function openMovie(movieId) {
   router.push({ name: 'MovieDetails', params: { movieId } });
 }
@@ -38,9 +41,12 @@ onMounted(async () => {
 </script>
 <template>
   <h1>Filmes</h1>
-  <ul v-for="genre in genreStore.genres" :key="genre.id" @click="listMovies(genre.id)" class="genre-item"
-    :class="{ active: genre.id === genreStore.currentGenreId }">
-    {{ genre.name }}
+  <ul class="genre-list">
+    <li v-for="genre in genreStore.genres" :key="genre.id" @click="listMovies(genre.id)" class="genre-item"
+      :class="{ active: genre.id === genreStore.currentGenreId }">
+      {{ genre.name }}
+  </li>
+
   </ul>
   <loading v-model:active="isLoading" is-full-page />
 
@@ -54,7 +60,7 @@ onMounted(async () => {
         <p class="movie-release-date">{{ formatDate(movie.release_date) }}</p>
         <p class="movie-genres">
           <span v-for="genre_id in movie.genre_ids" :key="genre_id" @click="listMovies(genre_id)"
-            :class="{ active: genre_id === genreStore.currentGenreId }" {{ genreStore.getGenreName(genre_id) }}>
+            :class="{ active: genre_id === genreStore.currentGenreId }">
             {{ getGenreName(genre_id) }}
           </span>
         </p>
